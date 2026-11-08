@@ -5,13 +5,21 @@
 > Java · Android (minSdk 26, targetSdk 34) · WebView UI (HTML/CSS/JS) · Node.js · Playwright/Chromium ·
 > ffmpeg · Piper TTS · Ollama (phi4) · Python · Natural Earth map data
 
-<!-- Screenshots: docs/img/home.png, docs/img/news.png, and a short clip of the briefing -->
+![Prxy TV home screen](docs/img/home.png)
+
+| News page with today's briefing | Daily briefing video frame |
+|---|---|
+| ![News](docs/img/news.png) | ![Briefing](docs/img/briefing-story.png) |
+| **All apps** | **Briefing intro** |
+| ![Apps](docs/img/apps.png) | ![Briefing intro](docs/img/briefing-intro.png) |
+
+<sub>Launcher UI rendered at 1080p with the real lab feed (counts only). App tiles are placeholders, not real app icons.</sub>
 
 ## 1. Prxy TV launcher (`launcher/`)
 A replacement home screen for a Google TV set, built to compete with the stock launcher and add homelab features.
 - Side rail (Home · News · Apps · Inputs · More), glass widgets, **focus-driven accent colour**, themes
 - App rows based on usage, HDMI input switching, voice-assistant chip, idle **screen saver** (`DreamService`)
-- **Lab widget**: live counts from my homelab (guests up, alerts, backups) through a counts-only feed
+- **Lab widget**: live counts from my homelab (attention items, blocked traffic, new and active devices) through a counts-only feed
 - **News page** with an in-app player for the daily briefing
 - An accessibility service that brings back the Home button after the system launcher takes it over
 - **Locked down:** only the `INTERNET` permission, and cleartext traffic is allowed to **one** lab address
