@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Prxy TV launcher. Network use is limited to the lab feed on 10.20.40.137 (see res/xml/network_security.xml). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:networkSecurityConfig="@xml/network_security"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/icon"
+        android:label="Prxy TV"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|orientation|uiMode"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Off by default. Enabled only if we ever get ADB and want Home to open this launcher. -->
+        <activity-alias
+            android:name=".HomeAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Screen saver: pick "Prxy TV" under Settings > Device Preferences > Screen saver. -->
+        <service
+            android:name=".PrxyDream"
+            android:exported="true"
+            android:label="Prxy TV clock"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- Home-button experiment. Inactive until enabled in Settings > Accessibility. -->
+        <service
+            android:name=".HomeKeyService"
+            android:exported="true"
+            android:label="Prxy TV Home button"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/home_service" />
+        </service>
+    </application>
+</manifest>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext HTTP is allowed to exactly one address: the lab feed. Everything else must be HTTPS (and the app opens nothing else). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.20.40.137</domain>
+    </domain-config>
+</network-security-config>

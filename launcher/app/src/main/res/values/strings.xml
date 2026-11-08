@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_service_desc">Opens Prxy TV when you press the Home button. It reads remote key presses only to catch Home; all other keys are passed through, and nothing is stored or sent.</string>
+</resources>

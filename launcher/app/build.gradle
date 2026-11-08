@@ -1,0 +1,14 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'lab.prxy.tv'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'lab.prxy.tv'
+        minSdk 26
+        targetSdk 34
+        versionCode 6
+        versionName '0.6'
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    buildTypes { release { minifyEnabled false } }
+}

@@ -1,0 +1,127 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Prxy Briefing</title>
+<style>
+@font-face { font-family: 'Plex'; src: url(fonts/IBMPlexSans-Variable-latin.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'PlexMono'; src: url(fonts/IBMPlexMono-600-latin.woff2) format('woff2'); font-weight: 600; }
+:root { --amber: #f6a04a; --amber-d: #d9720a; --red: #e0342d; --blue: #3a74ff; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #07090c; font-family: 'Plex', sans-serif; color: #fff; }
+#stage { position: absolute; inset: 0; overflow: hidden; }
+#map { position: absolute; left: 0; top: 0; width: 7680px; height: 3840px; transform-origin: 0 0; will-change: transform; }
+#relief { position: absolute; inset: 0; width: 7680px; height: 3840px; }
+#vec { position: absolute; inset: 0; width: 7680px; height: 3840px; }
+#vec path { vector-effect: non-scaling-stroke; fill: none; stroke: rgba(80,200,230,.38); stroke-width: 1.2px; }
+#vec path.hl { fill: rgba(246,160,74,.36); stroke: #ffc27a; stroke-width: 3.5px; }
+#vec path.hl2 { fill: rgba(58,116,255,.34); stroke: #9bbcff; stroke-width: 3.5px; }
+#shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7,9,12,.96) 0%, rgba(7,9,12,.93) 22%, rgba(7,9,12,.74) 38%, rgba(7,9,12,.42) 52%, rgba(7,9,12,.16) 66%, rgba(7,9,12,0) 82%), radial-gradient(ellipse at 70% 50%, transparent 40%, rgba(0,0,0,.6) 100%); }
+#scan { position: absolute; inset: 0; opacity: .13; background: repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0, rgba(255,255,255,.5) 1px, transparent 1px, transparent 4px); mix-blend-mode: overlay; }
+#panel { position: absolute; left: 90px; top: 140px; width: 840px; }
+#what { font-size: 30px; }
+#tag { display: inline-block; font-weight: 800; font-size: 30px; letter-spacing: .04em; padding: 8px 22px; background: var(--amber); color: #111; text-transform: uppercase; transform-origin: left; }
+#tag.red { background: var(--red); color: #fff; } #tag.blue { background: var(--blue); color: #fff; }
+#headline { font-size: 78px; line-height: 1.04; font-weight: 700; letter-spacing: -.02em; margin-top: 26px; }
+#headline .w { opacity: 0; display: inline-block; transform: translateY(14px); } #headline .hl { color: var(--amber); font-weight: 800; }
+#what { margin-top: 34px; font-size: 32px; line-height: 1.38; font-weight: 400; color: #e8ebf0; }
+#what b { color: var(--amber); font-weight: 700; letter-spacing: .02em; }
+#table { margin-top: 34px; width: 840px; border-top: 3px solid var(--amber); padding-top: 14px; opacity: 0; }
+#table .note { font-size: 19px; color: #8b93a0; margin-top: 8px; }
+#table h4 { font-size: 24px; letter-spacing: .12em; color: var(--amber); font-weight: 700; margin-bottom: 10px; }
+#table .r { display: flex; font-size: 28px; padding: 5px 0; } #table .r span:first-child { width: 330px; color: #aab1bd; } #table .r span { width: 250px; font-family: 'PlexMono'; }
+#table .r.head span { font-family: 'Plex'; font-weight: 800; color: #fff; }
+#brand { position: absolute; right: 80px; top: 56px; text-align: right; } #brand .b1 { font-size: 40px; font-weight: 800; letter-spacing: .06em; } #brand .b1 span { color: var(--amber); } #brand .b2 { font-family: 'PlexMono'; font-size: 22px; color: #aab1bd; letter-spacing: .2em; margin-top: 4px; }
+#date { position: absolute; left: 90px; top: 64px; font-family: 'PlexMono'; font-size: 24px; color: #aab1bd; letter-spacing: .12em; text-transform: uppercase; }
+#count { position: absolute; left: 90px; bottom: 74px; font-family: 'PlexMono'; font-size: 22px; color: var(--amber); letter-spacing: .12em; }
+#src { position: absolute; left: 90px; bottom: 40px; font-size: 20px; color: #8b93a0; max-width: 1200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#prog { position: absolute; left: 0; bottom: 0; height: 8px; background: var(--amber); width: 0; }
+#watermark { position: absolute; right: 80px; bottom: 60px; font-family: 'PlexMono'; font-size: 22px; letter-spacing: .14em; color: rgba(255,255,255,.55); }
+#label { position: absolute; font-family: 'PlexMono'; font-weight: 600; font-size: 24px; letter-spacing: .12em; padding: 6px 14px; background: rgba(7,9,12,.75); border-left: 4px solid var(--amber); }
+</style></head>
+<body><div id="stage">
+  <div id="map"><img id="relief" src="data/relief.jpg"><svg id="vec" viewBox="0 0 7680 3840" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div id="shade"></div><div id="scan"></div>
+  <div id="date"></div><div id="brand"><div class="b1">PRXY<span> BRIEFING</span></div><div class="b2">DAILY GEOPOLITICS</div></div>
+  <div id="panel"><div id="tag"></div><div id="headline"></div><div id="what"></div><div id="table"></div></div>
+  <div id="count"></div><div id="src"></div><div id="watermark"></div><div id="prog"></div>
+</div>
+<script>
+const W = 7680, H = 3840, VW = 1920, VH = 1080;
+let SCRIPT = null, C = null, built = false;
+const ease = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const el = (id) => document.getElementById(id);
+
+function bboxOf(codes) {
+  let b = [1e9, 1e9, -1e9, -1e9];
+  codes.forEach((c) => { const x = C[c]; if (!x) return; b = [Math.min(b[0], x.b[0]), Math.min(b[1], x.b[1]), Math.max(b[2], x.b[2]), Math.max(b[3], x.b[3])]; });
+  return b;
+}
+function camFor(story) {
+  if (!story.focus || !story.focus.length) return { cy: H * .42, s: .32, subx: W * .5 };
+  // frame the smaller countries; a huge neighbour (Russia, China) would otherwise force a whole-continent shot
+  const area = (c) => { const x = C[c]; return x ? (x.b[2] - x.b[0]) * (x.b[3] - x.b[1]) : 1e12; };
+  const sorted = story.focus.slice().sort((a, b) => area(a) - area(b)), small = area(sorted[0]);
+  const frame = sorted.filter((c) => area(c) <= small * 6);
+  const b = bboxOf(frame), w = Math.max(b[2] - b[0], 120), h = Math.max(b[3] - b[1], 90);
+  return { cy: (b[1] + b[3]) / 2, s: clamp(Math.min(VW * .4 / w, VH * .6 / h), .5, 5.5), subx: (b[0] + b[2]) / 2 };
+}
+function build(script, countries) {
+  SCRIPT = script; C = countries;
+  const svg = el('vec'); let html = '';
+  Object.keys(C).forEach((k) => { html += '<path id="p_' + k + '" d="' + C[k].d + '"/>'; });
+  svg.innerHTML = html;
+  // timeline
+  let t = 0; script.stories.forEach((s) => { s.t0 = t; t += s.dur; s.t1 = t; s.cam = camFor(s); }); script.total = t;
+  el('date').textContent = script.date; el('watermark').textContent = script.watermark || '';
+  built = true; window.__total = t;
+}
+function place(cam, screenX) {  // screenX: where the subject centre should appear on screen
+  let x = screenX - cam.subx * cam.s, y = VH * .5 - cam.cy * cam.s;
+  x = W * cam.s <= VW ? (VW - W * cam.s) / 2 : clamp(x, VW - W * cam.s, 0); y = H * cam.s <= VH ? (VH - H * cam.s) / 2 : clamp(y, VH - H * cam.s, 0);
+  el('map').style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + cam.s + ')';
+}
+let lastIdx = -1;
+function setStory(s, idx) {
+  lastIdx = idx;
+  const tag = el('tag'); tag.textContent = s.tag; tag.className = s.tagColor || '';
+  // headline: **word** marks highlighted words
+  const hl = el('headline'); hl.innerHTML = '';
+  s.headline.split(/\s+/).forEach((w, i) => { const span = document.createElement('span'); span.className = 'w' + (/^\*\*/.test(w) ? ' hl' : ''); span.textContent = w.replace(/\*\*/g, ''); hl.appendChild(span); hl.appendChild(document.createTextNode(' ')); });
+  // map highlights
+  document.querySelectorAll('#vec path.hl, #vec path.hl2').forEach((p) => p.setAttribute('class', ''));
+  (s.focus || []).forEach((c) => { const p = el('p_' + c); if (p) p.setAttribute('class', s.compare && s.compare.codes && s.compare.codes[1] === c ? 'hl2' : 'hl'); });
+  el('count').textContent = s.type === 'story' ? 'STORY ' + String(SCRIPT.stories.slice(0, idx + 1).filter((x) => x.type === 'story').length).padStart(2, '0') + ' / ' + String(SCRIPT.stories.filter((x) => x.type === 'story').length).padStart(2, '0') : 'PRXY BRIEFING';
+  el('src').textContent = s.sources ? (s.single ? 'Single outlet, not yet confirmed by other feeds: ' : 'Sources: ') + s.sources.join(', ') : '';
+  // comparison table
+  const tb = el('table');
+  if (s.compare) {
+    const c = s.compare; let h = '<h4>' + c.title + '</h4><div class="r head"><span></span><span>' + c.names[0] + '</span><span>' + c.names[1] + '</span></div>';
+    c.rows.forEach((r) => { h += '<div class="r"><span>' + r[0] + '</span><span>' + r[1] + '</span><span>' + r[2] + '</span></div>'; }); tb.innerHTML = h + (c.note ? '<div class="note">' + c.note + '</div>' : '');
+  } else tb.innerHTML = '';
+  el('what').innerHTML = '';
+  el('what').dataset.full = s.what;
+}
+function draw(t) {
+  if (!built) return;
+  t = clamp(t, 0, SCRIPT.total - .001);
+  let idx = SCRIPT.stories.findIndex((s) => t >= s.t0 && t < s.t1); if (idx < 0) idx = SCRIPT.stories.length - 1;
+  const s = SCRIPT.stories[idx], lt = t - s.t0;
+  if (idx !== lastIdx) setStory(s, idx);
+  // camera: glide from previous view to this one
+  const prev = idx > 0 ? SCRIPT.stories[idx - 1] : null, from = prev ? prev.cam : { cy: H * .42, s: .32, subx: W * .5 };
+  const k = ease(clamp(lt / 2.2, 0, 1));
+  const cam = { s: from.s * Math.pow(s.cam.s / from.s, k), cy: from.cy + (s.cam.cy - from.cy) * k, subx: from.subx + (s.cam.subx - from.subx) * k };
+  // slow drift so it never looks frozen
+  cam.s *= 1 + lt * .004; place(cam, 1330);
+  // highlights fade in
+  document.querySelectorAll('#vec path.hl, #vec path.hl2').forEach((p) => { p.style.opacity = clamp((lt - 1.2) / .8, 0, 1); });
+  // tag + headline + text reveal
+  el('tag').style.opacity = clamp(lt / .3, 0, 1); el('tag').style.transform = 'scaleX(' + (0.6 + .4 * clamp(lt / .3, 0, 1)) + ')';
+  document.querySelectorAll('#headline .w').forEach((w, i) => { const a = clamp((lt - .5 - i * .11) / .25, 0, 1); w.style.opacity = a; w.style.transform = 'translateY(' + (14 * (1 - a)) + 'px)'; });
+  const full = el('what').dataset.full || '', nHead = document.querySelectorAll('#headline .w').length;
+  const st = .5 + nHead * .11 + .4, n = Math.floor(clamp((lt - st) / Math.max(.5, (s.dur - st - 1.2)), 0, 1) * full.length);
+  const esc = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;'); el('what').innerHTML = '<b>WHAT HAPPENED:</b> ' + esc(full.slice(0, n)) + '<span style="opacity:0">' + esc(full.slice(n)) + '</span>';
+  el('table').style.opacity = clamp((lt - (s.dur * .55)) / .6, 0, 1);
+  el('prog').style.width = (t / SCRIPT.total * 100) + '%';
+}
+window.build = build; window.draw = draw;
+</script></body></html>
